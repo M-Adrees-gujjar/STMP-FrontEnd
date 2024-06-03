@@ -8,7 +8,7 @@ const SectionOne = () => {
             </div>
             <div className="w-full lg:w-1/2 flex justify-center items-center mt-5 lg:mt-0">
                 <div className="img lg:w-2/4 sm:w-full h-72">
-                    <img src="/src/assets/Images/01_index.jpg" alt="Image" className="w-full h-full object-cover" />
+                    <img src="https://res.cloudinary.com/dkzca4hyd/image/upload/v1717440991/01_index_xu5bwc.jpg" alt="Image" className="w-full h-full object-cover" />
                 </div>
             </div>
         </section>

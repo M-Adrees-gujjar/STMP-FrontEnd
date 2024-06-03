@@ -43,7 +43,7 @@ function handelLink(item){
                 <div className="flex flex-shrink-0 items-center">
                   <img
                     className="h-16 w-auto"
-                    src="/src/assets/Images/00_logo.png"
+                    src="https://res.cloudinary.com/dkzca4hyd/image/upload/v1717440991/00_logo_x3dtn2.png"
                     alt="Your Company"
                   />
                 </div>
