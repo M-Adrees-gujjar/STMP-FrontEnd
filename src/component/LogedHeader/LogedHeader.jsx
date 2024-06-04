@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -64,15 +65,14 @@ function handelLink(item){
                 </div>
               </div>
               <div className="flex items-center justify-center gap-x-6">
-              <button
+              <Link to="/signUp"
                 className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={handelClick}
               >
                 Get started
-              </button>
-              <a href="/signIn" className="text-sm font-semibold leading-6 text-gray-900">
+              </Link>
+              <button onClick={handelClick} className="text-sm font-semibold leading-6 text-gray-900">
                 Log In <span aria-hidden="true">→</span>
-              </a>
+              </button>
             </div>
             </div>
           </div>

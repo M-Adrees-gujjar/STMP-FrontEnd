@@ -1,4 +1,44 @@
-function SignUp() {
+import { useRef } from "react";
+
+export default function SignUp() {
+
+  const SignUpForm = useRef();
+
+  function submitData(e) {
+    e.preventDefault();
+    let name = SignUpForm.current.children[0].children[1].firstChild.value;
+    let email = SignUpForm.current.children[1].children[1].firstChild.value;
+    let password = SignUpForm.current.children[2].children[1].firstChild.value;
+    let confirm_password = SignUpForm.current.children[3].children[1].firstChild.value;
+    console.log("Submited..........",name,email,password,confirm_password);
+
+    if (password == confirm_password) {
+      
+    fetch('http://localhost:3000/tchSignUP', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          Name: name,
+          Email: email,
+          Password: password
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        console.log("res----form ------",res);
+          if (res.token) {
+              location.replace('/signIn');
+          } else {
+              alert("SomeThing Went Wrong");
+          }
+      });
+    }else{
+      alert("Password Should match with Confirm Password");
+    }
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen py-2 lg:px-4 px-0 ">
       <div className="flex items-center justify-center h-5/6 lg:py-4 py-2 shadow-2xl shadow-slate-800 lg:w-1/3 w-full rounded-lg">
@@ -8,7 +48,7 @@ function SignUp() {
           <h2 className="mt-2 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign Up to Create Account</h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" method="POST" onSubmit={(e)=>submitData(e)} ref={SignUpForm}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">Username</label>
               <div className="mt-1">
@@ -52,5 +92,3 @@ function SignUp() {
     </div>
   );
 }
-
-export default SignUp;
