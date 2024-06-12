@@ -2,7 +2,7 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
-export default function Example(props) {
+export default function PopUp(props) {
   const {open , setOpen} = props
 
   return (
@@ -46,7 +46,7 @@ export default function Example(props) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => location.replace('/stddashboard')}
                   >
                     Student
                   </button>

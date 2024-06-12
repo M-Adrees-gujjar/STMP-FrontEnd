@@ -5,6 +5,7 @@ import Tabel from "./component/Tabels/Tabel";
 import Home from './Home';
 import Profile from './component/Profile/Profile'
 import Setting from './component/Setting/Setting'
+import StdDashBoard from './component/StdDashBoard/StdDashBoard'
 // import MainPortal from './component/MainPortal/MainPortal'
 import { BrowserRouter , Routes ,Route } from "react-router-dom";
 function App() {
@@ -18,6 +19,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/setting" element={<Setting />} />
               <Route path="/mainportal" element={<Tabel />} />
+              <Route path="/stddashboard" element={<StdDashBoard />} />
           </Routes>
       </BrowserRouter>
     </>

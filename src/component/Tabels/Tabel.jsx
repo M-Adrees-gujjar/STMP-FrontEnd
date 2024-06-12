@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+
 import {
   Dialog,
   DialogPanel,
@@ -8,43 +8,124 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import { useState } from "react";
-
-const products = [
-  {
-    name: "Adrees",
-    email: "Adrees@gmail.com",
-    password: "Laptop",
-    subject: "$2999",
-  },
-  {
-    name: "Adrees",
-    email: "Adrees@gmail.com",
-    password: "Laptop",
-    subject: "$2999",
-  },
-  {
-    name: "Adrees",
-    email: "Adrees@gmail.com",
-    password: "Laptop",
-    subject: "$2999",
-  },
-  {
-    name: "Adrees",
-    email: "Adrees@gmail.com",
-    password: "Laptop",
-    subject: "$2999",
-  },
-  {
-    name: "Adrees",
-    email: "Adrees@gmail.com",
-    password: "Laptop",
-    subject: "$2999",
-  },
-];
+import { useCallback, useEffect, useState } from "react";
 
 export default function ProductTable() {
   const [open, setOpen] = useState(false);
+  const [products,setProducts] = useState([]);
+  const [globalIndex,setGlobalIndex] = useState('');
+
+  const [val,setVal] = useState({
+    name : '',
+    email : '',
+    password : '',
+    exam : ''
+  });
+
+  function addStudent() {
+    if (globalIndex) {
+      fetch('http://localhost:3000/update_student', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          id : globalIndex,
+          name: val.name,
+          email : val.email,
+          password: val.password,
+          exam : val.exam,
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        console.log("res----form ------",res);
+        setGlobalIndex('');
+      });
+    setOpen(false);
+    findStudent();
+    } else {
+    let token = localStorage.getItem('token');
+    fetch('http://localhost:3000/add_std', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          name: val.name,
+          email : val.email,
+          password: val.password,
+          exam : val.exam,
+          token : token
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        console.log("res----form ------",res);
+      });
+    setOpen(false);
+    findStudent();
+    }
+  }
+
+  const findStudent = useCallback(()=>{
+    let token = localStorage.getItem('token');
+    fetch('http://localhost:3000/find_student', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          token : token
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+        setProducts(res.response);
+        }else{
+          alert("Wrong.......");
+        }
+      });
+  },[]);
+
+  useEffect(()=>{
+    findStudent()
+  },[findStudent]);
+
+  function deleteStudent(id) {
+    fetch('http://localhost:3000/delete_student', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        element : id
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+        findStudent();
+        }else{
+          alert("Wrong.......");
+        }
+      });
+  }
+
+  function updateStudent(id) {
+
+    setOpen(true);
+    let value = products.filter(element=>{
+      return element._id == id
+    })
+    const obj = value[0]
+    console.log("--- value --- ",value);
+    setVal (obj);
+    setGlobalIndex(id);
+    console.log("--- id - globalInd-- ",globalIndex,"---",id);
+  }
+
   return (
     <>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-white max-w-screen-lg m-auto flex flex-col gap-10 p-6 my-10">
@@ -86,13 +167,13 @@ export default function ProductTable() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody> 
             {products.map((product, index) => (
               <tr
-                key={index}
-                className={`${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } border-b`}
+              key={product._id}
+              className={`${
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } border-b`}
               >
                 <th
                   scope="row"
@@ -102,20 +183,20 @@ export default function ProductTable() {
                 </th>
                 <td className="px-6 py-4">{product.email}</td>
                 <td className="px-6 py-4">{product.password}</td>
-                <td className="px-6 py-4">{product.subject}</td>
+                <td className="px-6 py-4">{product.exam}</td>
                 <td className="px-6 py-4 flex gap-5">
-                  <Link
-                    to="#"
+                  <button
+                    onClick={()=>updateStudent(product._id)}
                     className="font-medium text-blue-600 hover:underline"
                   >
                     <FontAwesomeIcon icon={faPenToSquare} />
-                  </Link>
-                  <Link
-                    to="#"
+                  </button>
+                  <button
+                    onClick={()=>deleteStudent(product._id)}
                     className="font-medium text-blue-600 hover:underline"
                   >
                     <FontAwesomeIcon icon={faTrash} />
-                  </Link>
+                  </button>
                 </td>
               </tr>
             ))}
@@ -168,6 +249,8 @@ export default function ProductTable() {
                         </label>
                         <div className="mt-1">
                           <input
+                          onChange={(e)=>setVal({...val,name : e.target.value})}
+                            value = {val.name}
                             id="name"
                             name="name"
                             type="text"
@@ -186,6 +269,8 @@ export default function ProductTable() {
                         </label>
                         <div className="mt-1">
                           <input
+                          onChange={(e)=>setVal({...val,email : e.target.value})}
+                          value = {val.email}
                             id="email"
                             name="email"
                             type="email"
@@ -206,6 +291,8 @@ export default function ProductTable() {
                         </div>
                         <div className="mt-1">
                           <input
+                          onChange={(e)=>setVal({...val,password : e.target.value})}
+                          value = {val.password}
                             id="password"
                             name="password"
                             type="password"
@@ -226,9 +313,11 @@ export default function ProductTable() {
                         </div>
                         <div className="mt-1">
                           <input
-                            id="conf-password"
-                            name="conf-password"
-                            type="password"
+                          onChange={(e)=>setVal({...val,exam : e.target.value})}
+                          value = {val.exam}
+                            id="exam"
+                            name="exam"
+                            type="text"
                             required
                             className="block w-full rounded-md border-0 ps-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                           />
@@ -237,7 +326,7 @@ export default function ProductTable() {
                       <button
                         type="button"
                         className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                        onClick={() => setOpen(false)}
+                        onClick={addStudent}
                       >
                         Save
                       </button>

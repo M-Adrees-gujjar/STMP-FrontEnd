@@ -1,9 +1,38 @@
+import { useState } from "react";
+
 function SignIn() {
+
+  const [val,setVal] = useState({
+    email : '',
+    password : '',
+  })
 
   function SubmitData(e) {
     e.preventDefault();
     console.log("SignIn///////////");
-    location.replace("/mainportal")
+    // location.replace("/mainportal");
+
+    console.log("val------",val);
+    fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          Email: val.email,
+          Password: val.password
+      })
+  })
+      .then(res => res.json())
+      .then(res => {
+        console.log("res----form ------",res);
+          if (res.token) {
+            localStorage.setItem("token",res.token);
+            location.replace("/mainportal");
+          } else {
+              alert("SomeThing Went Wrong");
+          }
+      });
   }
 
   return (
@@ -21,7 +50,8 @@ function SignIn() {
       <div>
         <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email Address</label>
         <div className="mt-1">
-          <input id="email" name="email" type="email" autoComplete="email" required className="block w-full rounded-md border-0 ps-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+          <input onChange={(e)=>setVal({...val,email : e.target.value})}
+        id="email" name="email" type="email" autoComplete="email" required className="block w-full rounded-md border-0 ps-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
         </div>
       </div>
       <div>
@@ -29,7 +59,7 @@ function SignIn() {
           <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
         </div>
         <div className="mt-1">
-          <input id="password" name="password" type="password" autoComplete="current-password" required className="block w-full rounded-md border-0 ps-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+          <input onChange={(e)=>setVal({...val,password : e.target.value})} id="password" name="password" type="password" autoComplete="current-password" required className="block w-full rounded-md border-0 ps-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
         </div>
       </div>
 
