@@ -7,14 +7,18 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import socket from "../socket";
+import {Link} from "react-router-dom";
+
 
 export default function StdDashBoard() {
-  const [callouts, setCallouts] = useState([]);
   let commitCondition = true;
+  const [callouts, setCallouts] = useState([]);
+  const [commits, setCommits] = useState([]);
   const [commitShow, setCommitShow] = useState(-1);
   const [input, setInput] = useState({
     imageFile: "",
     caption: "",
+    commits: "",
   });
   const [open, setOpen] = useState(false);
   function like(value) {
@@ -25,17 +29,40 @@ export default function StdDashBoard() {
     setCallouts([...success.response]);
   });
 
-  function commit(id) {
+  function commit(id,element) {
+    console.log("comitId---",element);
     if (commitCondition) {
       setCommitShow(id);
       commitCondition = false;
-      console.log("Comi----", commitCondition);
+      socket.emit("allCommit", {
+        element: element
+      });
     } else {
       commitCondition = true;
       setCommitShow(-1);
-      console.log("Comi--alse--", commitCondition);
     }
   }
+
+  function postCommit(id) {
+    console.log("Input Value ---", input.commits);
+    console.log("Input ID ---", id);
+    socket.emit("commit", {
+      element: id,
+      commit: `${input.commits}`,
+    });
+  }
+
+  //---------0-------------------------
+  socket.on("commit_response", function (msg) {
+    console.log("frontEnd--commit_response---", msg);
+    setCommits([...msg])
+    setInput({...input,commits:""})
+  });
+  socket.on("allCommit_response", function (msg) {
+    console.log("frontEnd--allCommits---", msg);
+    setCommits([...msg])
+  });
+  //---------0-------------------------
 
   function handleClick() {
     setOpen(true);
@@ -145,7 +172,7 @@ export default function StdDashBoard() {
                     </div>
                     <div
                       className="post_icon flex items-center text-blue-500 cursor-pointer"
-                      onClick={() => commit(i)}
+                      onClick={() => commit(i,callout._id)}
                     >
                       <span className="mr-2">
                         <i className="fa-regular fa-comment"></i>
@@ -170,20 +197,25 @@ export default function StdDashBoard() {
                           placeholder="Enter Comment"
                           id={`commit_input`}
                           className="w-full px-3 py-2 border rounded-md"
-                          // value={commitText}
-                          // onChange={(e) => setCommitText(e.target.value)}
+                          value={input.commits}
+                          onChange={(e) =>
+                            setInput({ ...input, commits: e.target.value })
+                          }
                         />
                       </div>
                       <div className="commit_button m-2 mx-4">
                         <button
                           type="button"
                           className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                          onClick={() => postCommit(callout._id)}
                         >
                           Post Comment
                         </button>
                       </div>
-                        <h1 className="font-bold mx-5 my-3 text-lg">Commits</h1>
-                      <div className="profile_box bg-white p-4 rounded-lg mx-4">
+                      <h1 className="font-bold mx-5 my-3 text-lg">Commits</h1>
+                      {
+                        commits.map(element=>(
+                          <div className="profile_box bg-white p-4 my-3 rounded-lg mx-4" key={element._id}>
                         <div className="profile_info flex items-center mb-4">
                           <div className="profile_img mr-4">
                             <div className="img_box w-7 h-7 overflow-hidden rounded-full">
@@ -196,16 +228,26 @@ export default function StdDashBoard() {
                           </div>
                           <div className="about_box">
                             <h6 className="text-gray-800 text-sm">
-                              {"Muhammad Adrees Gujjar"}
+                              {element.commit_id}
                             </h6>
                           </div>
                         </div>
                         <div className="profile_caption">
                           <h5 className="text-gray-700 text-sm">
-                            {callout.caption}
+                            {element.commit}
                           </h5>
+                          <div className="flex gap-3 text-sm text-blue-600">
+                            <Link to="#" className="hover:underline italic">
+                            Like
+                            </Link>
+                            <Link to="#" className="hover:underline italic">
+                              Dislike
+                            </Link>
+                          </div>
                         </div>
                       </div>
+                        ))
+                      }
                     </div>
                   )}
                 </div>

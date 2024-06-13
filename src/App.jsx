@@ -6,6 +6,7 @@ import Home from './Home';
 import Profile from './component/Profile/Profile'
 import Setting from './component/Setting/Setting'
 import StdDashBoard from './component/StdDashBoard/StdDashBoard'
+import TestCreation from './component/TestCreation/TestCreation'
 // import MainPortal from './component/MainPortal/MainPortal'
 import { BrowserRouter , Routes ,Route } from "react-router-dom";
 function App() {
@@ -20,6 +21,7 @@ function App() {
               <Route path="/setting" element={<Setting />} />
               <Route path="/mainportal" element={<Tabel />} />
               <Route path="/stddashboard" element={<StdDashBoard />} />
+              <Route path="/testcreation" element={<TestCreation />} />
           </Routes>
       </BrowserRouter>
     </>
